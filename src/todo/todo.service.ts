@@ -1,26 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Todo } from './entities/todo.entity';
+import { ReadTodoDto } from './dto/read-todo.dto';
 
 @Injectable()
 export class TodoService {
-  create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+  private id = 2;
+  private todos: Todo[] = [
+    {
+      id: 1,
+      title: 'Todo 1',
+      description: 'Description 1',
+      done: false,
+    },
+    {
+      id: 2,
+      title: 'Todo 2',
+      description: 'Description 2',
+      done: true,
+    },
+  ];
+
+  create(createTodoDto: CreateTodoDto): ReadTodoDto {
+    const id = ++this.id;
+    const newTodo = {
+      id,
+      ...createTodoDto,
+    };
+    this.todos.push(newTodo);
+    return newTodo;
+  }
+  findAll(): ReadTodoDto[] {
+    return this.todos;
   }
 
-  findAll() {
-    return `This action returns all todo`;
+  findOne(id: number): ReadTodoDto {
+    return this.todos.find((todo) => todo.id === id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
-  }
-
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
+  update(id: number, updateTodoDto: UpdateTodoDto): ReadTodoDto {
+    const todo = this.todos.find((todo) => todo.id === id);
+    if (!todo) {
+      return null;
+    }
+    Object.assign(todo, updateTodoDto);
+    return { ...todo };
   }
 
   remove(id: number) {
-    return `This action removes a #${id} todo`;
+    const index = this.todos.findIndex((todo) => todo.id === id);
+    if (index === -1) {
+      return null;
+    }
+    this.todos.splice(index, 1);
+    return this.todos;
   }
 }
