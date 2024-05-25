@@ -9,18 +9,18 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateTodoDto } from './create-todo.dto';
 
 export class UpdateTodoDto extends PartialType(CreateTodoDto) {
+  //partial type is used to make all properties optional
+  // other way to make properties optional is to use @IsOptional() decorator
+  // And and other form with typescript is to use ? after property name
   @IsNotEmpty()
   @MinLength(5)
-  @IsOptional()
   title: string;
 
   @IsNotEmpty()
   @Length(10, 12)
-  @IsOptional()
   description: string;
 
   @IsNotEmpty()
   @IsBoolean()
-  @IsOptional()
   done: boolean;
 }

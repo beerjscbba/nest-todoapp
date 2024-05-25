@@ -3,7 +3,7 @@ import { OmitType } from '@nestjs/mapped-types';
 import { Todo } from '../entities/todo.entity';
 export class CreateTodoDto extends OmitType(Todo, ['id']) {
   @IsNotEmpty()
-  @MinLength(5)
+  @MinLength(5, { message: 'Title is too short 5 custom' })
   title: string;
 
   @IsNotEmpty()
