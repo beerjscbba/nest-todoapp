@@ -22,17 +22,20 @@ export class TodoService {
     },
   ];
 
-  create(createTodoDto: CreateTodoDto): ReadTodoDto {
+  create(createTodoDto: CreateTodoDto): Promise<ReadTodoDto> {
     const id = ++this.id;
     const newTodo = {
       id,
       ...createTodoDto,
     };
     this.todos.push(newTodo);
-    return newTodo;
+    return new Promise((resolve, reject) => {
+      resolve({ ...newTodo });
+      reject(new Error('Error'));
+    });
   }
-  findAll(): ReadTodoDto[] {
-    return this.todos;
+  findAll(): Promise<ReadTodoDto[]> {
+    return Promise.resolve(this.todos);
   }
 
   findOne(id: number): ReadTodoDto {
