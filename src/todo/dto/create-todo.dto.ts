@@ -7,7 +7,7 @@ export class CreateTodoDto extends OmitType(Todo, ['id']) {
   title: string;
 
   @IsNotEmpty()
-  @Length(10, 12)
+  @Length(10, 100)
   description: string;
 
   @IsNotEmpty()

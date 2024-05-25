@@ -1,62 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Todo } from './entities/todo.entity';
+import { Todo } from '../schemas/todo.schema';
 import { ReadTodoDto } from './dto/read-todo.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class TodoService {
-  private id = 2;
-  private todos: Todo[] = [
-    {
-      id: 1,
-      title: 'Todo 1',
-      description: 'Description 1',
-      done: false,
-    },
-    {
-      id: 2,
-      title: 'Todo 2',
-      description: 'Description 2',
-      done: true,
-    },
-  ];
+  constructor(
+    @InjectModel(Todo.name) private readonly todoModel: Model<Todo>,
+  ) {}
 
-  create(createTodoDto: CreateTodoDto): Promise<ReadTodoDto> {
-    const id = ++this.id;
-    const newTodo = {
-      id,
-      ...createTodoDto,
-    };
-    this.todos.push(newTodo);
-    return new Promise((resolve, reject) => {
-      resolve({ ...newTodo });
-      reject(new Error('Error'));
+  async create(createTodoDto: CreateTodoDto): Promise<ReadTodoDto> {
+    const createdTodo = new this.todoModel(createTodoDto);
+    return createdTodo.save();
+  }
+  async findAll(): Promise<ReadTodoDto[]> {
+    return this.todoModel.find();
+  }
+
+  async findOne(id: string): Promise<ReadTodoDto> {
+    return this.todoModel.findById(id);
+  }
+  async update(id: string, updateTodoDto: UpdateTodoDto): Promise<ReadTodoDto> {
+    //new true is used to return the updated document
+
+    return this.todoModel.findByIdAndUpdate(id, updateTodoDto, {
+      new: true,
     });
   }
-  findAll(): Promise<ReadTodoDto[]> {
-    return Promise.resolve(this.todos);
+
+  async remove(id: string) {
+    return this.todoModel.findByIdAndDelete(id);
   }
 
-  findOne(id: number): ReadTodoDto {
-    return this.todos.find((todo) => todo.id === id);
-  }
-
-  update(id: number, updateTodoDto: UpdateTodoDto): ReadTodoDto {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (!todo) {
-      return null;
-    }
-    Object.assign(todo, updateTodoDto);
-    return { ...todo };
-  }
-
-  remove(id: number) {
-    const index = this.todos.findIndex((todo) => todo.id === id);
-    if (index === -1) {
-      return null;
-    }
-    this.todos.splice(index, 1);
-    return this.todos;
+  async removeAll() {
+    return this.todoModel.deleteMany();
   }
 }
