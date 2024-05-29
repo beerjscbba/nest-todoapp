@@ -36,24 +36,29 @@ export class TodoService {
   }
 
   findOne(id: number): ReadTodoDto {
-    return this.todos.find((todo) => todo.id === id);
+    const todo = this.todos.find((todo) => todo.id === id);
+    if (!todo) {
+      // Here, you must customize the error or implement the necessary control
+      // throw new Error(`not found object with id: ${id}`)
+      console.log(`not found object with id: ${id}`);
+    } else {
+      return todo
+    }
   }
 
   update(id: number, updateTodoDto: UpdateTodoDto): ReadTodoDto {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (!todo) {
-      return null;
-    }
+    const todo = this.findOne(id)
     Object.assign(todo, updateTodoDto);
     return { ...todo };
   }
 
-  remove(id: number) {
+  remove(id: number | string) {
     const index = this.todos.findIndex((todo) => todo.id === id);
     if (index === -1) {
       return null;
     }
     this.todos.splice(index, 1);
-    return this.todos;
+    return `Delete the todo with id: ${id}`
+    // return this.todos
   }
 }
