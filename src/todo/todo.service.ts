@@ -3,6 +3,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './entities/todo.entity';
 import { ReadTodoDto } from './dto/read-todo.dto';
+import { resolve } from 'path';
 
 @Injectable()
 export class TodoService {
@@ -52,7 +53,7 @@ export class TodoService {
     return { ...todo };
   }
 
-  remove(id: number | string) {
+  remove(id: number) {
     const index = this.todos.findIndex((todo) => todo.id === id);
     if (index === -1) {
       return null;
